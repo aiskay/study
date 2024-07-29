@@ -1,0 +1,743 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass bxjsarticle
+\begin_preamble
+\date{}
+\end_preamble
+\use_default_options true
+\begin_modules
+algorithm2e
+theorems-starred
+\end_modules
+\maintain_unincluded_children false
+\begin_local_layout
+PackageOptions algorithm2e "lined, boxed"
+\end_local_layout
+\language japanese
+\language_package none
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts true
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command bibtex
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry true
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 2
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\topmargin 2.4cm
+\rightmargin 2cm
+\bottommargin 2.4cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style cjk
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Sequential Model-based Global Optimization (SMBO) 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+
+\backslash
+
+\end_layout
+
+\end_inset
+
+and Bayesian Optimization
+\end_layout
+
+\begin_layout Standard
+参考文献
+\begin_inset CommandInset citation
+LatexCommand cite
+key "NIPS2011_86e8f7ab"
+literal "false"
+
+\end_inset
+
+に基づいて parameter 最適化のアルゴリズムについてまとめる。
+\end_layout
+
+\begin_layout Section
+Sequential Model-based Global Optimization (SMBO)
+\end_layout
+
+\begin_layout Standard
+評価に非常に時間がかかる予測モデル
+\begin_inset Formula $f:\mathcal{X}\rightarrow\mathbb{R}$
+\end_inset
+
+の hyper parameter 
+\begin_inset Formula $\bm{x}\in\mathcal{X}$
+\end_inset
+
+の最適化を考えた場合、直感的な解決方法は予測モデル
+\begin_inset Formula $f$
+\end_inset
+
+の
+\begin_inset Formula $\bm{x}$
+\end_inset
+
+に対する performance を低コストに予測できる適当な回帰モデル (response surface model と呼ばれることが多い)
+ を作成し、それを用いて
+\begin_inset Formula $\bm{x}$
+\end_inset
+
+の評価を行うことで最適化を行うことである。このような手法は model-based optimization と呼ばれるが、このモデル作成と予測値の収集の過程を
+繰り返していく手法が Sequential model-based optimization (SMBO) と呼ばれるものである。
+\end_layout
+
+\begin_layout Standard
+以上の話からわかるように、model-based な最適化では以下の 2 点を適当に定めなければならない。
+\end_layout
+
+\begin_layout Itemize
+Hyper parameter に対する予測にどのようなモデルを仮定するか
+\end_layout
+
+\begin_layout Itemize
+そのモデルの評価にどのような指標 (関数) を用いるか
+\end_layout
+
+\begin_layout Standard
+hyperopt や optuna では、予測確率モデルとして Tree-structured Parzen Estimator (TPE) を、評価指標として
+ Expected Improvement
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+~
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "jon01"
+literal "false"
+
+\end_inset
+
+ (EI)
+\begin_inset Formula 
+\begin{equation}
+{\rm EI}_{y^{*}}(x)\equiv\int_{-\infty}^{\infty}\max\left(y^{*}-y,0\right)p_{M}\left(y|x\right)dy
+\end{equation}
+
+\end_inset
+
+を用いている。これは、
+\begin_inset Formula $f$
+\end_inset
+
+の予測モデル
+\begin_inset Formula $M$
+\end_inset
+
+の下での
+\begin_inset Formula $f(x)$
+\end_inset
+
+の threshold 
+\begin_inset Formula $y^{*}$
+\end_inset
+
+からの期待スコア改善量を表している
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+一般に評価指標
+\begin_inset Formula $y$
+\end_inset
+
+は小さいほどよいものが想定されている。
+\end_layout
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+なお、その他の評価指標として minimizing the Conditional Entropy of the Minimizer
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+~
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "DBLP:journals/corr/abs-cs-0611143"
+literal "false"
+
+\end_inset
+
+ や the bandit-based criterion
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+~
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset citation
+LatexCommand cite
+key "DBLP:journals/corr/abs-0912-3995"
+literal "false"
+
+\end_inset
+
+ などがあるが、ここでは EI のみを考える。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement t
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+KwIn{Target algorithm $f: 
+\backslash
+bm{x} 
+\backslash
+rightarrow 
+\backslash
+mathbb{R}$, inital SMBO model $M_0$, number of trials $T$, surrogate function
+ $S$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+KwOut{Observation history $
+\backslash
+mathcal{H}$ of parameters and performance $(
+\backslash
+left[ (
+\backslash
+bm{x}_1, y_1), (
+\backslash
+bm{x}_2, y_2), 
+\backslash
+cdots 
+\backslash
+right])$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+BlankLine
+\end_layout
+
+\begin_layout Plain Layout
+
+$
+\backslash
+mathcal{H} 
+\backslash
+leftarrow 
+\backslash
+emptyset$ 
+\backslash
+;
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+For{$t$ in $T$}{
+\end_layout
+
+\begin_layout Plain Layout
+
+$x^* 
+\backslash
+leftarrow {
+\backslash
+rm argmin}_x S(
+\backslash
+bm{
+\backslash
+theta}, M_{t-1})$ 
+\backslash
+;
+\end_layout
+
+\begin_layout Plain Layout
+
+$y 
+\backslash
+leftarrow f(
+\backslash
+bm{x}^*) 
+\backslash
+quad $ (Expensive step)
+\backslash
+;
+\end_layout
+
+\begin_layout Plain Layout
+
+$
+\backslash
+mathcal{H} 
+\backslash
+leftarrow 
+\backslash
+mathcal{H} 
+\backslash
+cup (
+\backslash
+bm{x}^*, y)$ 
+\backslash
+;
+\end_layout
+
+\begin_layout Plain Layout
+
+$M_t 
+\backslash
+leftarrow {
+\backslash
+rm FitModel}(
+\backslash
+mathcal{H})$
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+Return{$
+\backslash
+mathcal{H}$}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+BlankLine
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Algorithm framework of generic Sequential Model-Based Optimization (SMBO)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Tree-structured Parzen Estimator Approach (TPE)
+\end_layout
+
+\begin_layout Standard
+TPE approach は Bayes の定理
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+p(y|x)=\frac{p(x|y)p(y)}{p(x)},
+\end{equation}
+
+\end_inset
+
+を用いて
+\begin_inset Formula $p(y|x)$
+\end_inset
+
+を計算をする手法である。簡単のため、
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+p(x|y)=\begin{cases}
+l(x) & \left(y<y^{*}\right)\\
+g(x) & \left(y\geq y^{*}\right)
+\end{cases}
+\end{equation}
+
+\end_inset
+
+とし、
+\begin_inset Formula $y^{*}$
+\end_inset
+
+を
+\begin_inset Formula $y$
+\end_inset
+
+の
+\begin_inset Formula $\gamma$
+\end_inset
+
+分位点
+\begin_inset Formula $p(y<y^{*})\equiv\gamma$
+\end_inset
+
+とおく。
+\begin_inset Formula $l(x),g(x)$
+\end_inset
+
+はそれぞれ予測値が
+\begin_inset Formula $y^{*}$
+\end_inset
+
+以下、以上になったものの parameter の分布を表す。
+\end_layout
+
+\begin_layout Standard
+このとき EI は
+\begin_inset Formula 
+\begin{align}
+{\rm EI}_{y^{*}}(x) & =\int_{-\infty}^{y^{*}}(y^{*}-y)p\left(y|x\right)dy,\\
+ & =\int_{-\infty}^{y^{*}}(y^{*}-y)\frac{p(x|y)p(y)}{p(x)}dy,\\
+ & =\frac{l(x)\left[\gamma y^{*}-\int_{-\infty}^{y^{*}}yp(y)dy\right]}{\gamma l(x)+(1-\gamma)g(x)},\\
+ & \propto\left(\gamma+(1-\gamma)\frac{g(x)}{l(x)}\right)^{-1}.
+\end{align}
+
+\end_inset
+
+と変形できることがわかる。従って、EI を最大化するには良い予測値の parameter による分布の値
+\begin_inset Formula $l(x)$
+\end_inset
+
+を大きく、逆に悪いものの
+\begin_inset Formula $g(x)$
+\end_inset
+
+の値を小さくなるような
+\begin_inset Formula $x$
+\end_inset
+
+を取れば良い。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $l(x),g(x)$
+\end_inset
+
+を予測する手法の一つとして Parzen Estimator (カーネル密度推定法とも呼ぶ)がある。カーネル密度推定法は未知の母集団からの sampling
+ とみなせるデータ点の集合から母集団の確率密度分布を推定するノンパラメトリック手法の一つで、
+\begin_inset Formula $x_{i}(i=1,\cdots,n)$
+\end_inset
+
+を確率密度
+\begin_inset Formula $p(x)$
+\end_inset
+
+からの独立な標本としたとき、
+\begin_inset Formula $p(x)$
+\end_inset
+
+は以下のように表される。
+\begin_inset Formula 
+\begin{equation}
+p(x)=\frac{1}{nh}\sum_{i=1}^{n}K\left(\frac{x-x_{i}}{h}\right)
+\end{equation}
+
+\end_inset
+
+つまり、標本まわりにある band width 
+\begin_inset Formula $h$
+\end_inset
+
+でカーネル関数
+\begin_inset Formula $K$
+\end_inset
+
+を仮定し、それを足し合わせて平均して全体の確率密度関数とする方法である。カーネルとしては標準ガウス関数
+\begin_inset Formula 
+\begin{equation}
+K(x)=\frac{1}{\sqrt{2\pi}}e^{-x^{2}/2},
+\end{equation}
+
+\end_inset
+
+が使われることが多い。
+\end_layout
+
+\begin_layout Section
+\start_of_appendix
+The Gaussian Process Approaches (GP)
+\end_layout
+
+\begin_layout Standard
+ある入力
+\begin_inset Formula $\bm{x}$
+\end_inset
+
+から出力
+\begin_inset Formula $y$
+\end_inset
+
+を予測する最も一般的な確率モデルはガウス過程 (Gaussian process) である。
+\end_layout
+
+\begin_layout Definition
+確率過程
+\begin_inset Formula $\left\{ \bm{X}_{t};t\in T\right\} $
+\end_inset
+
+がガウス過程であるとは、任意の finite subset 
+\begin_inset Formula $\bm{X}_{t_{1},\cdots,t_{k}}=\left(\bm{X}_{t_{1}},\cdots,\bm{X}_{t_{k}}\right)$
+\end_inset
+
+の同時確率分布が多変量正規分布に従うことをいう。これは
+\begin_inset Formula $\left(\bm{X}_{t_{1}},\cdots,\bm{X}_{t_{k}}\right)$
+\end_inset
+
+の任意の線形結合がガウス分布に従うことと同義である。
+\end_layout
+
+\begin_layout Standard
+ガウス過程を用いた回帰では、以下のような手順である入力
+\begin_inset Formula $\bm{x}$
+\end_inset
+
+に対する出力の予測を行う。
+\end_layout
+
+\begin_layout Enumerate
+予測モデルの出力
+\begin_inset Formula $\bm{f}(X)=\left(f(\bm{x}_{1}),f(\bm{x}_{2})\cdots\right)$
+\end_inset
+
+がガウス過程に従うと仮定する
+\end_layout
+
+\begin_layout Enumerate
+平均
+\begin_inset Formula $\bm{m}_{0}(X)$
+\end_inset
+
+、分散共分散行列
+\begin_inset Formula $K(X,X)=k(\bm{x}_{i},\bm{x}_{j})$
+\end_inset
+
+を適当に定めることで
+\begin_inset Formula $\bm{f}$
+\end_inset
+
+の事前分布
+\begin_inset Formula $p(\bm{f}|X)=N\left(\bm{f}|\bm{m}_{0}(X),K(X,X)\right)$
+\end_inset
+
+を定める
+\end_layout
+
+\begin_layout Enumerate
+定めた事前分布からランダムに
+\begin_inset Formula $\bm{f}$
+\end_inset
+
+を生成する
+\end_layout
+
+\begin_layout Enumerate
+生成した
+\begin_inset Formula $\bm{f}$
+\end_inset
+
+を用いて
+\begin_inset Formula $\bm{y}=\bm{f}(X)(+\epsilon)$
+\end_inset
+
+を計算する
+\end_layout
+
+\begin_layout Enumerate
+Bayes の定理を用いて
+\begin_inset Formula $\bm{y}$
+\end_inset
+
+が観測された元での
+\begin_inset Formula $\bm{y}'$
+\end_inset
+
+の事後分布を求める
+\begin_inset Formula 
+\[
+p\left(\bm{y}'|\bm{y}\right)=\frac{p(\bm{y},\bm{y}')}{p(\bm{y})}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+新たな parameter 
+\begin_inset Formula $X^{*}$
+\end_inset
+
+を事後分布に代入することで次の予測値の分布を計算する
+\end_layout
+
+\begin_layout Standard
+なお、典型的な分散共分散行列としてはガウスカーネル
+\begin_inset Formula 
+\begin{equation}
+k(\bm{x}_{i},\bm{x}_{j})=\exp\left(-\beta|\bm{x}_{i}-\bm{x}'_{j}|^{2}\right),
+\end{equation}
+
+\end_inset
+
+を用いることが多い。
+\end_layout
+
+\begin_layout Standard
+EI を用いる場合は、
+\begin_inset Formula $y^{*}$
+\end_inset
+
+に observation 内の最小値
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y^{*}=\min\left(f(x_{i}),1\leq i\leq n\right),
+\end{equation}
+
+\end_inset
+
+を用いる。
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintCited"
+bibfiles "smbo"
+options "style"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
