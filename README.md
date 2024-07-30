@@ -1,1 +1,1 @@
-# study
+Materials created for study groups or workshops.

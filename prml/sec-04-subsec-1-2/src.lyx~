@@ -1,0 +1,1071 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass bxjsarticle
+\begin_preamble
+\usepackage{ascmac}
+\setcounter{tocdepth}{3}
+
+\setcounter{section}{4}
+\end_preamble
+\use_default_options true
+\begin_modules
+theorems-starred
+eqs-within-sections
+figs-within-sections
+\end_modules
+\maintain_unincluded_children false
+\language japanese
+\language_package 
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format pdf5
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry true
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1.8cm
+\topmargin 2cm
+\rightmargin 1.8cm
+\bottommargin 2.3cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style cjk
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Chapter 4.
+ Linear Models for Classification
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+vspace{1cm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+この章では、
+\begin_inset Formula $D$
+\end_inset
+
+-dimensional input space を disjoint な 
+\begin_inset Formula $K$
+\end_inset
+
+ 個の decision regions (決定領域) 
+\begin_inset Formula $\mathcal{C}_{k}\ (k=1,\cdots,K)$
+\end_inset
+
+ に分ける decision boundaries/decision surfaces (決定境界/決定面) を決定するための線形モデルについて考える
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+線形の決定面で完全に分離可能なデータを linearly separable (線形分離可能) と言う。
+\end_layout
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+特別な場合を除き、本章では正解変数を
+\end_layout
+
+\begin_layout Itemize
+二クラス分類 
+\begin_inset Formula $t$
+\end_inset
+
+ : 
+\begin_inset Formula $\left\{ 0,1\right\} $
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+多クラス分類 
+\begin_inset Formula $\bm{{\rm t}}$
+\end_inset
+
+ : 1-of-
+\begin_inset Formula $K$
+\end_inset
+
+ coding
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+例えば 
+\begin_inset Formula $K=4$
+\end_inset
+
+ で class 
+\begin_inset Formula $2$
+\end_inset
+
+ に分類されるときの target は 
+\begin_inset Formula $\bm{{\rm t}}=\left(0,1,0,0\right)^{T}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+で表すこととし、以下の 3 つの手法について説明する。
+\end_layout
+
+\begin_layout Enumerate
+入力ベクトルから直接クラスを推定する discrimination function (識別関数) を用いた方法
+\end_layout
+
+\begin_layout Enumerate
+条件付き確率分布 
+\begin_inset Formula $p\left(\mathcal{C}_{k}|\bm{{\rm x}}\right)$
+\end_inset
+
+ をモデル化してその分布を利用する方法
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+\begin_inset Formula $p\left(\mathcal{C}_{k}|\bm{{\rm x}}\right)$
+\end_inset
+
+ を直接モデル化する
+\end_layout
+
+\begin_layout Enumerate
+\begin_inset Formula $p\left(\bm{{\rm x}}|\mathcal{C}_{k}\right)$
+\end_inset
+
+ と 
+\begin_inset Formula $p\left(\mathcal{C}_{k}\right)$
+\end_inset
+
+ をモデル化して Bayes' theorem から 
+\begin_inset Formula $p\left(\mathcal{C}_{k}|\bm{{\rm x}}\right)$
+\end_inset
+
+ を求める
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+また、本章では 3 章の線形回帰を activation function (活性化関数) 
+\begin_inset Formula $f\left(\cdot\right)$
+\end_inset
+
+ を用いて確率に拡張した generalized linear model (一般化線形モデル)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y\left(\bm{{\rm x}}\right)=f\left(\bm{{\rm w}}^{T}\bm{{\rm x}}+w_{0}\right),
+\end{equation}
+
+\end_inset
+
+のみについて説明するが、3 章で見たように 
+\begin_inset Formula $\phi\left(\bm{{\rm x}}\right)$
+\end_inset
+
+ を基底に用いることで容易に議論を拡張できる。 
+\end_layout
+
+\begin_layout Standard
+以降の一連の流れとして、まず二クラス分類の議論をした後にそれを 
+\begin_inset Formula $K$
+\end_inset
+
+ クラス分類に一般化するという形で進める。
+\end_layout
+
+\begin_layout Subsection
+Discriminant Functions
+\end_layout
+
+\begin_layout Standard
+まずは識別関数を用いた分類のお話。
+\end_layout
+
+\begin_layout Subsubsection
+Two classes
+\end_layout
+
+\begin_layout Standard
+4.1.6 まで手書きノート参照。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+setcounter{subsubsection}{6}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+The perceptron algorithm
+\end_layout
+
+\begin_layout Standard
+2 クラス分類の有名な線形識別モデルであるパーセプトロンモデルを最後に簡単に説明する。
+\end_layout
+
+\begin_layout Standard
+パーセプトロンモデルは、適当な非線形変換 
+\begin_inset Formula $\phi\left(\bm{{\rm x}}\right)$
+\end_inset
+
+ の下での一般化線形モデル
+\begin_inset Formula 
+\begin{equation}
+y\left(\bm{{\rm x}}\right)=f\left(\bm{{\rm w}}^{T}\phi\left(\bm{{\rm x}}\right)\right),\quad\left({\rm including\ bias\ component}\ \phi_{0}\left(\bm{{\rm x}}\right)=1\right)
+\end{equation}
+
+\end_inset
+
+where
+\begin_inset Formula 
+\begin{equation}
+f\left(a\right)=\begin{cases}
++1, & a\geq0\\
+-1, & a\leq0
+\end{cases}.
+\end{equation}
+
+\end_inset
+
+である。さらに、正解ラベルの値として 
+\begin_inset Formula $t\in\left\{ +1,-1\right\} $
+\end_inset
+
+を用いることで議論が簡略化されている。
+\end_layout
+
+\begin_layout Standard
+誤差関数としては、
+\begin_inset Formula $\mathcal{M}$
+\end_inset
+
+ を誤分類されたものの集合としてperceptron criterion (パーセプトロン基準) と呼ばれる
+\begin_inset Formula 
+\begin{equation}
+E_{P}\left(\bm{{\rm w}}\right)=-\sum_{n\in\mathcal{M}}\bm{{\rm w}}^{T}\phi_{n}t_{n},
+\end{equation}
+
+\end_inset
+
+を用いる
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+最も単純な誤差関数は誤分類されたデータの数であるが、そうすると誤差関数が 
+\begin_inset Formula $\bm{{\rm w}}$
+\end_inset
+
+ に関して不連続になってしまい勾配降下法が使えないため、より数学的に扱いやすい形になっている。
+\end_layout
+
+\end_inset
+
+。この誤差関数を用いて、
+\begin_inset Formula $\text{\ensuremath{\bm{{\rm w}}}}$
+\end_inset
+
+ を確率的勾配降下法
+\begin_inset Formula 
+\begin{equation}
+\bm{{\rm w}}^{\left(\tau+1\right)}=\bm{{\rm w}}^{\left(\tau\right)}+\eta\phi_{n}t_{n},
+\end{equation}
+
+\end_inset
+
+によって更新していく
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+本文中の 
+\begin_inset Formula $\eta\nabla E_{P}$
+\end_inset
+
+ の表現は正しくは確率的勾配降下法ではないので注意。
+\end_layout
+
+\end_inset
+
+。また、パーセプトロンモデルの出力は 
+\begin_inset Formula $\bm{{\rm w}}$
+\end_inset
+
+ の定数倍で変化しないので、一般性を失わずに 
+\begin_inset Formula $\eta=1$
+\end_inset
+
+ とできる。従って、パーセプトロンモデルの学習プロセスでは、パーセプトロン関数を評価した後、誤って分類された場合のみ重みベクトル 
+\begin_inset Formula $\bm{{\rm w}}$
+\end_inset
+
+ に 
+\begin_inset Formula $\phi_{n}t_{n}$
+\end_inset
+
+ を足すという過程を繰り返すものであるということがわかる (図.
+ 4.7)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename img/fig-4-7.png
+	lyxscale 50
+	width 85text%
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+このプロセスは、
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+-\bm{{\rm w}}^{\left(\tau+1\right)T}\phi_{n}t_{n}=-\bm{{\rm w}}^{\left(\tau\right)T}\phi_{n}t_{n}-\left(\phi_{n}t_{n}\right)^{T}\phi_{n}t_{n}<-\bm{{\rm w}}^{\left(\tau\right)T}\phi_{n}t_{n}.
+\end{equation}
+
+\end_inset
+
+より誤分類されたパターンからの誤差への寄与を減少させることができる一方、それ以外のデータの誤差にどう影響を与えるかについては何も言っていない。さらには、総誤差関
+数を減少させることを保証してもいない。
+\end_layout
+
+\begin_layout Standard
+ただし、perceptron convergence theorem (パーセプトロンの収束定理) では、学習データ集合が線形分離可能な場合パーセプトロン学習ア
+ルゴリズムは有限回の繰り返しで厳密解に収束することが保証されている。しかし、その繰り返しの回数がかなり多いため、現実では線形分離できない問題なのか収束が遅いだけ
+なのか判断がつかないことが多い。また、線形分離可能な場合でもパラメータの初期値やデータの入力順に応じて様々な解に収束してしまうといった問題もある。
+\end_layout
+
+\begin_layout Subsection
+Probabilistic Generative Models
+\end_layout
+
+\begin_layout Standard
+次に、クラス条件付 
+\begin_inset Formula $p\left(\mathcal{C}_{k}|\bm{{\rm x}}\right)$
+\end_inset
+
+ 分布を用いて決定境界を定める generative な手法を用いることで、単純な仮定の下線形な決定境界が現れることを見てみる。
+\end_layout
+
+\begin_layout Subsubsection*
+Logistic sigmoid function
+\end_layout
+
+\begin_layout Standard
+二クラス分類の場合、例えば 
+\begin_inset Formula $\mathcal{C}_{1}$
+\end_inset
+
+ に分類される確率は Bayes の定理より
+\begin_inset Formula 
+\begin{align}
+p\left(\mathcal{C}_{1}|\bm{{\rm x}}\right) & =\frac{p\left(\bm{{\rm x}}|\mathcal{C}_{1}\right)p\left(\mathcal{C}_{1}\right)}{p\left(\bm{{\rm x}}|\mathcal{C}_{1}\right)p\left(\bm{{\rm x}}|\mathcal{C}_{1}\right)+p\left(\bm{{\rm x}}|\mathcal{C}_{2}\right)p\left(\bm{{\rm x}}|\mathcal{C}_{2}\right)},\\
+ & =\frac{1}{1+\exp\left(-a\right)},\\
+ & \equiv\sigma\left(a\right).\label{eq:logistic_sigmoid_function}
+\end{align}
+
+\end_inset
+
+where
+\begin_inset Formula 
+\begin{equation}
+\sigma\left(a\right)\equiv\frac{1}{1+\exp\left(-a\right)},\quad a\equiv\ln\frac{p\left(\bm{{\rm x}}|\mathcal{C}_{1}\right)p\left(\mathcal{C}_{1}\right)}{p\left(\bm{{\rm x}}|\mathcal{C}_{2}\right)p\left(\mathcal{C}_{2}\right)},\label{eq:logit-function}
+\end{equation}
+
+\end_inset
+
+と表され、この 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ を logistic sigmoide function と呼ぶ。
+\end_layout
+
+\begin_layout Standard
+定義から明らかなように
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sigma\left(-a\right)=1-\sigma\left(a\right),\quad a=\ln\left(\frac{\sigma}{1-\sigma}\right),
+\end{equation}
+
+\end_inset
+
+の性質があり、
+\begin_inset Formula $a$
+\end_inset
+
+ は logit function/log odds と呼ばれる。
+\end_layout
+
+\begin_layout Subsubsection*
+Normalized exponential function
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $K>2$
+\end_inset
+
+ の他クラス分類の場合、事後確率は normalized exponential function (正規化指数関数)
+\begin_inset Formula 
+\begin{equation}
+p\left(\mathcal{C}_{k}|\bm{{\rm x}}\right)=\frac{p\left(\bm{{\rm x}}|\mathcal{C}_{k}\right)p\left(\mathcal{C}_{k}\right)}{\sum_{j}p\left(\bm{{\rm x}}|\mathcal{C}_{j}\right)p\left(\bm{{\rm x}}|\mathcal{C}_{j}\right)}=\frac{\exp\left(a_{k}\right)}{\sum_{j}\exp\left(a_{j}\right)},\label{eq:normalized-exponential-function}
+\end{equation}
+
+\end_inset
+
+where
+\begin_inset Formula 
+\begin{equation}
+a_{k}\equiv\ln p\left(\bm{{\rm x}}|\mathcal{C}_{k}\right)p\left(\mathcal{C}_{k}\right),\label{eq:softmax-function}
+\end{equation}
+
+\end_inset
+
+で表され、
+\begin_inset Formula $a_{k}$
+\end_inset
+
+ は max 関数と似ていることより softmax function と呼ばれる
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+例えば、もし 
+\begin_inset Formula $a_{k}\gg a_{j}$
+\end_inset
+
+ for all 
+\begin_inset Formula $j\neq k$
+\end_inset
+
+ なら 
+\begin_inset Formula $p\left(\mathcal{C}_{k}|\bm{{\rm x}}\right)\simeq1$
+\end_inset
+
+ and 
+\begin_inset Formula $p\left(\mathcal{C}_{j}|\bm{{\rm x}}\right)\simeq0$
+\end_inset
+
+ となる。
+\end_layout
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Subsubsection
+Continuous Inputs
+\end_layout
+
+\begin_layout Standard
+まず、クラス条件付分布が Gaussian で表され、クラス間の共分散行列が同じ場合
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+p\left(\bm{{\rm x}}|\mathcal{C}_{k}\right)=\frac{1}{\left(2\pi\right)^{D/2}}\frac{1}{\left|\bm{\Sigma}\right|^{1/2}}\exp\left[-\frac{1}{2}\left(\bm{{\rm x}}-\bm{\mu}_{k}\right)^{T}\bm{\Sigma}\left(\bm{{\rm x}}-\bm{\mu}_{k}\right)\right],
+\end{equation}
+
+\end_inset
+
+を考える。このとき、
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:logistic_sigmoid_function"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:logit-function"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ より
+\begin_inset Formula 
+\begin{equation}
+p\left(\mathcal{C}_{1}|\bm{{\rm x}}\right)=\sigma\left(\bm{{\rm w}}^{T}\bm{{\rm x}}+w_{0}\right),
+\end{equation}
+
+\end_inset
+
+where
+\begin_inset Formula 
+\begin{align}
+\bm{{\rm w}} & =\bm{\Sigma}^{-1}\left(\bm{\mu}_{1}-\bm{\mu}_{2}\right),\\
+w_{0} & =-\frac{1}{2}\bm{\mu}_{1}^{T}\bm{\Sigma}^{-1}\bm{\mu}_{1}+\frac{1}{2}\bm{\mu}_{2}^{T}\bm{\Sigma}^{-1}\bm{\mu}_{2}+\ln\frac{p\left(\mathcal{C}_{1}\right)}{p\left(\mathcal{C}_{2}\right)}.
+\end{align}
+
+\end_inset
+
+従って、事後分布は 
+\begin_inset Formula $\bm{{\rm x}}$
+\end_inset
+
+ の 1 次関数となり図 4.10 の右のように図示される。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename img/fig-4-10.png
+	lyxscale 50
+	width 85text%
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+一般の 
+\begin_inset Formula $K$
+\end_inset
+
+ クラス分類の場合も同様に 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:normalized-exponential-function"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:softmax-function"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ より、
+\begin_inset Formula 
+\begin{equation}
+a_{k}\equiv\ln p\left(\bm{{\rm x}}|\mathcal{C}_{k}\right)p\left(\mathcal{C}_{k}\right)=\bm{{\rm w}}_{k}^{T}\bm{{\rm x}}+w_{k0},
+\end{equation}
+
+\end_inset
+
+where
+\begin_inset Formula 
+\begin{align}
+\bm{{\rm w}}_{k} & =\bm{\Sigma}^{-1}\bm{\mu}_{k},\\
+w_{0} & =-\frac{1}{2}\bm{\mu}_{k}^{T}\bm{\Sigma}^{-1}\bm{\mu}_{k}+\ln p\left(\mathcal{C}_{k}\right),
+\end{align}
+
+\end_inset
+
+となり、これも 
+\begin_inset Formula $\bm{{\rm x}}$
+\end_inset
+
+ の線形関数になることがわかる。また、1.5.1 で見たように誤分類を最小にする決定境界は事後分布の確率が等しい場合に相当するため、決定境界も同様に
+ 
+\begin_inset Formula $\bm{{\rm x}}$
+\end_inset
+
+ の線形関数になる (図 4.11)。
+\end_layout
+
+\begin_layout Standard
+一方、クラスごとの共分散行列が同じではない場合、分母分子の cancel がなくなるため quadratic discriminant (2 次判別関数)
+ となる (図 4.11)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename img/fig-4-11.png
+	lyxscale 50
+	width 85text%
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Maximum likelihood solution
+\end_layout
+
+\begin_layout Standard
+最尤推定法を使ってパラメータの値を確認してみる。
+\end_layout
+
+\begin_layout Standard
+まず、共通の共分散で Gaussian の事前分布を持つ 2 クラス分類を考えデータセットを 
+\begin_inset Formula $\left\{ \bm{{\rm x}}_{n},t_{n}\right\} \ \left(n=1,\cdots,N\right)$
+\end_inset
+
+ と表す。また、事前分布を
+\begin_inset Formula 
+\begin{equation}
+p\left(\mathcal{C}_{1}\right)=\pi,\ p\left(\mathcal{C}_{2}\right)=1-\pi,
+\end{equation}
+
+\end_inset
+
+とおくと、事後分布はそれぞれ
+\begin_inset Formula 
+\begin{align}
+p\left(\bm{{\rm x}}_{n},\mathcal{C}_{1}\right) & =p\left(\mathcal{C}_{1}\right)p\left(\bm{{\rm x}}_{n}|\mathcal{C}_{1}\right)=\pi\mathcal{N}\left(\bm{{\rm x}}_{n}|\bm{\mu}_{1},\bm{\Sigma}\right),\\
+p\left(\bm{{\rm x}}_{n},\mathcal{C}_{2}\right) & =p\left(\mathcal{C}_{2}\right)p\left(\bm{{\rm x}}_{n}|\mathcal{C}_{2}\right)=\left(1-\pi\right)\mathcal{N}\left(\bm{{\rm x}}_{n}|\bm{\mu}_{2},\bm{\Sigma}\right).
+\end{align}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\therefore\quad p\left(\bm{{\rm t}}|\pi,\bm{\mu}_{1},\bm{\mu}_{2},\bm{\Sigma}\right)=\prod_{n=1}^{N}\left[\pi\mathcal{N}\left(\bm{{\rm x}}_{n}|\bm{\mu}_{1},\bm{\Sigma}\right)\right]^{t_{n}}\left[\left(1-\pi\right)\mathcal{N}\left(\bm{{\rm x}}_{n}|\bm{\mu}_{2},\bm{\Sigma}\right)\right]^{1-t_{n}}.
+\end{equation}
+
+\end_inset
+
+where 
+\begin_inset Formula $\bm{{\rm t}}=\left(t_{1},\cdots,t_{N}\right)^{T}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+まず、
+\begin_inset Formula $\pi$
+\end_inset
+
+ について log-likelihood を最大化してみると、
+\begin_inset Formula 
+\begin{equation}
+\sum_{n=1}^{N}\left[t_{n}\ln\pi+\left(1-t_{n}\right)\ln\left(1-\pi\right)\right].
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\therefore\quad\frac{\partial\ln p}{\partial\pi}=0\quad\Leftrightarrow\quad\pi=\frac{1}{N}\sum_{n=1}^{N}t_{n}=\frac{N_{1}}{N_{1}+N_{2}}.
+\end{equation}
+
+\end_inset
+
+となり、単純に各クラスに含まれるデータ数との比で表されることがわかる。隣全く同様にして、
+\begin_inset Formula $K$
+\end_inset
+
+ クラス分類の場合も 
+\begin_inset Formula $N_{k}/N$
+\end_inset
+
+ となる。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\bm{\mu}_{1}$
+\end_inset
+
+ については、
+\begin_inset Formula 
+\begin{equation}
+\sum_{n=1}^{N}t_{n}\mathcal{N}\left(\bm{{\rm x}}_{n}|\bm{\mu}_{1},\bm{\Sigma}\right)=-\frac{1}{2}\sum_{n=1}^{N}t_{n}\left(\bm{{\rm x}}_{n}-\bm{\mu}_{1}\right)^{T}\Sigma^{-1}\left(\bm{{\rm x}}_{n}-\bm{\mu}_{1}\right)+{\rm const}.
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\therefore\quad\frac{\partial\ln p}{\partial\bm{\mu}_{1}}=0\quad\Leftrightarrow\quad\bm{\mu}_{1}=\frac{1}{N_{1}}\sum_{n=1}^{N}t_{n}\bm{{\rm x}}_{n}.
+\end{equation}
+
+\end_inset
+
+となり
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Formula $\frac{d}{d\bm{x}}\left(\bm{x}^{T}A\bm{x}\right)=\left(A+A^{T}\right)\bm{x}$
+\end_inset
+
+ などを用いる。
+\end_layout
+
+\end_inset
+
+、input vector 
+\begin_inset Formula $\bm{{\rm x}}$
+\end_inset
+
+ の単純平均となる。
+\begin_inset Formula $\bm{\mu}_{2}$
+\end_inset
+
+ についても同様。
+\end_layout
+
+\begin_layout Standard
+最後に shared covariance matrix 
+\begin_inset Formula $\bm{\Sigma}$
+\end_inset
+
+ について考えると、
+\begin_inset Formula 
+\begin{align}
+ & -\frac{1}{2}\sum_{n=1}^{N}t_{n}\ln\left|\bm{\Sigma}\right|-\frac{1}{2}\sum_{n=1}^{N}t_{n}\left(\bm{{\rm x}}_{n}-\bm{\mu}_{1}\right)^{T}\bm{\Sigma}^{-1}\left(\bm{{\rm x}_{n}}-\bm{\mu}_{1}\right),\\
+= & -\frac{1}{2}\sum_{n=1}^{N}\left(1-t_{n}\right)\ln\left|\bm{\Sigma}\right|-\frac{1}{2}\sum_{n=1}^{N}\left(1-t_{n}\right)\left(\bm{{\rm x}}_{n}-\bm{\mu}_{1}\right)^{T}\bm{\Sigma}^{-1}\left(\bm{{\rm x}_{n}}-\bm{\mu}_{1}\right),\\
+= & -\frac{N}{2}\ln\text{\left|\bm{\Sigma}\right|}-\frac{N}{2}{\rm Tr}\left[\bm{\Sigma}^{-1}\bm{{\rm S}}\right].
+\end{align}
+
+\end_inset
+
+where
+\begin_inset Formula 
+\begin{align}
+\bm{{\rm S}} & =\frac{N_{1}}{N}\bm{{\rm S}}_{1}+\frac{N_{2}}{N}\bm{{\rm S}}_{2},\\
+\bm{{\rm S}}_{1} & =\frac{1}{N_{1}}\sum_{n\in\mathcal{C}_{1}}\left(\bm{{\rm x}}_{n}-\bm{\mu}_{1}\right)\left(\bm{{\rm x}}_{n}-\bm{\mu}_{1}\right)^{T},\\
+\bm{{\rm S}}_{2} & =\frac{1}{N_{2}}\sum_{n\in\mathcal{C}_{2}}\left(\bm{{\rm x}}_{n}-\bm{\mu}_{2}\right)\left(\bm{{\rm x}}_{n}-\bm{\mu}_{2}\right)^{T}.
+\end{align}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+\therefore\quad\frac{\partial\ln p}{\partial\bm{\Sigma}}=0\quad\Leftrightarrow\quad\bm{\Sigma}=\bm{{\rm S}}.
+\end{equation}
+
+\end_inset
+
+この方法は 
+\begin_inset Formula $K$
+\end_inset
+
+ クラス分類の場合にも容易に一般化できる。しかし、正規分布を仮定した最尤推定は外れ値に頑強ではないことには注意した方が良い。
+\end_layout
+
+\begin_layout Subsubsection
+Discrete features
+\end_layout
+
+\begin_layout Standard
+離散特徴量について考える。
+\end_layout
+
+\begin_layout Standard
+まず、簡単のため 
+\begin_inset Formula $D$
+\end_inset
+
+ 次元の二値特徴量 
+\begin_inset Formula $x_{i}\in\left\{ 0,1\right\} $
+\end_inset
+
+ を考えると、分布をパラメータの組み合わせは 
+\begin_inset Formula $2^{D}-1$
+\end_inset
+
+ 通り存在する。このままではパラメータ数が指数関数的に発散してしまうので、
+\begin_inset Formula $\mathcal{C}_{k}$
+\end_inset
+
+ の条件の下で各特徴量のパラメータが独立だと仮定する naive Bayes assumtion を用いると、
+\begin_inset Formula 
+\begin{equation}
+p\left(\bm{{\rm x}}|\mathcal{C}_{k}\right)=\prod_{i=1}^{D}\mu_{ki}^{x_{i}}\left(1-\mu_{ki}\right)^{1-x_{i}},
+\end{equation}
+
+\end_inset
+
+と表される。これを 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:softmax-function"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ に代入すると、
+\begin_inset Formula 
+\begin{equation}
+a\left(\bm{{\rm x}}\right)=\sum_{i=1}^{D}\left\{ x_{i}\ln\mu_{ki}+\left(1-x_{i}\right)\ln\left(1-\mu_{ki}\right)\right\} +\ln p\left(\mathcal{C}_{k}\right),
+\end{equation}
+
+\end_inset
+
+となり再び線形関数で表されることがわかる。
+\end_layout
+
+\begin_layout Subsubsection
+Exponential family
+\end_layout
+
+\begin_layout Standard
+Gaussian や離散データで事後分布が 
+\begin_inset Formula $\bm{{\rm x}}$
+\end_inset
+
+ に関して logistic sigmoid/softmax function を活性化関数とした generalized linear models
+ になるという話は指数分布族の特別な場合で一般化できる。
+\end_layout
+
+\begin_layout Standard
+クラス条件付確率分布を指数分布族
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+p\left(\bm{{\rm x}|\bm{\lambda}}_{k}\right)=h\left(\bm{{\rm x}}\right)g\left(\bm{\lambda}_{k}\right)\exp\left[\bm{\lambda}_{k}^{T}\bm{u}\left(\bm{{\rm x}}\right)\right],
+\end{equation}
+
+\end_inset
+
+として 
+\begin_inset Formula $\bm{u}\left(\bm{{\rm x}}\right)=\bm{{\rm x}}$
+\end_inset
+
+ に限り、scale invariance を導入してパラメータ 
+\begin_inset Formula $s$
+\end_inset
+
+ を設定すると
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $s$
+\end_inset
+
+ を導入したのはとりあえず何か一般化して議論したかった的なノリかと思われる。(別に translational invariance でも良さそう)
+\end_layout
+
+\end_inset
+
+、 
+\begin_inset Formula 
+\begin{equation}
+p\left(\bm{{\rm x}|\bm{\lambda}}_{k},s\right)=\frac{1}{s}h\left(\frac{1}{s}\bm{{\rm x}}\right)g\left(\bm{\lambda}_{k}\right)\exp\left[\frac{1}{s}\bm{\lambda}_{k}^{T}\bm{{\rm x}}\right],
+\end{equation}
+
+\end_inset
+
+と表せる。これをそれぞれ 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:logit-function"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand eqref
+reference "eq:softmax-function"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ に代入すれば 
+\begin_inset Formula 
+\begin{align}
+a\left(\bm{{\rm x}}\right) & =\left(\bm{\lambda}_{1}-\bm{\lambda}_{2}\right)^{T}\bm{{\rm x}}+\ln g\left(\bm{\lambda}_{1}\right)-\ln g\left(\bm{\lambda}_{2}\right)+\ln p\left(\mathcal{C}_{1}\right)-\ln p\left(\mathcal{C}_{2}\right),\\
+a_{k}\left(\bm{{\rm x}}\right) & =\frac{1}{s}\bm{\lambda}_{k}^{T}\bm{{\rm x}}+\ln g\left(\bm{\lambda}_{k}\right)\ln p\left(\mathcal{C}_{k}\right),
+\end{align}
+
+\end_inset
+
+となり、どちらも 
+\begin_inset Formula $\bm{{\rm x}}$
+\end_inset
+
+ の線形関数になることがわかる。
+\end_layout
+
+\begin_layout Standard
+\start_of_appendix
+
+\end_layout
+
+\end_body
+\end_document

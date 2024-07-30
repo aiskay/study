@@ -1,0 +1,1672 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass bxjsarticle
+\begin_preamble
+\usepackage{ascmac}
+\setcounter{tocdepth}{3}
+\end_preamble
+\use_default_options true
+\begin_modules
+theorems-starred
+eqs-within-sections
+figs-within-sections
+\end_modules
+\maintain_unincluded_children false
+\language japanese
+\language_package 
+\inputencoding utf8-plain
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format pdf5
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1.8cm
+\topmargin 2cm
+\rightmargin 1.8cm
+\bottommargin 2.3cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style cjk
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+PRML Chapter 1
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+Pattern recognition とは
+\end_layout
+
+\begin_layout Itemize
+algorithm を用いてデータから自動的に法則を見つけること
+\end_layout
+
+\begin_layout Itemize
+その法則を用いて (データを異なるカテゴリに分類するといったような) 処理を行うこと
+\end_layout
+
+\begin_layout Example
+Recognizing Handwritten digits (
+\begin_inset Formula $0-9$
+\end_inset
+
+ の手書き数字の分類)
+\end_layout
+
+\begin_layout Example
+人手による rule や heuristic を用いた分類は、法則や例外が容易に発散してしまいうまくいかない。このように、大量のデータ 
+\begin_inset Formula $\{\bm{x_{1}},\cdots,\bm{x}_{N}\}$
+\end_inset
+
+ (training set) を正解カテゴリ 
+\begin_inset Formula $\bm{t}$
+\end_inset
+
+ (target vector) を元にしてモデルの tuning を行うような場合、機械学習的アプローチが有効である。データ 
+\begin_inset Formula $\bm{x}$
+\end_inset
+
+ からのモデルの出力 
+\begin_inset Formula $\bm{y}(\bm{x})$
+\end_inset
+
+ の精度は training (learning) phase にされるが、training set はデータ全体のごく一部でしかないことから、未知のデータを正
+しく分類できるかというモデルの generalization が常に重要になる。
+\end_layout
+
+\begin_layout Standard
+また、実用上は以下の理由からデータを preprocess することが多い (feature extraction とも呼ばれる)。
+\end_layout
+
+\begin_layout Itemize
+解くべき問題をより簡単にする (データの variability を減らす)
+\end_layout
+
+\begin_layout Itemize
+計算をより早くする (問題を解くために必要な情報を取捨選択する)
+\end_layout
+
+\begin_layout Standard
+この際、必要な情報まで落としてしまわないように注意が必要である。
+\end_layout
+
+\begin_layout Standard
+以上の話は supervised learning の例であるが、pattern recognition の問題設定には以下のようものがある。
+\end_layout
+
+\begin_layout Enumerate
+Supervised learning
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Input vector を対応する target vector に分類する。出力が有限離散カテゴリなら classification、連続値なら
+ regression と呼ばれる。
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Unsupervised learning
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Input vector のみから成るデータを用いる。タスクとしては、似たものを grouping する clustering、input space
+ でのデータの分布を見る density estimation、高次元データを低次元に落とし込む visualization などがある。
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Reinforcement learning
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+与えられた状況で reward を最大化する行動を見つけるよう学習する。ただし、reward は一連の行動の結果として得られるため、どの行動がどの程度結果に寄与
+したのかを正しく割り当てることは難しい。このような問題は credit assignment problem と呼ばれる。一般に reinforcement
+ learning は high reward を求めて新たなことに挑戦する exploration と high reward であることがわかっている行動を
+取る exploitation のバランスで成り立っている。
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+本章前半ではこれら手法の根底にある重要な考え方を具体例を交えながら簡単に説明する。また、後半では今後必要な probability theory,
+ decision theory, information theory の基礎を簡潔に導入する。
+\end_layout
+
+\begin_layout Subsection
+Example: Polynomial Curve Fitting
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename img/fig-1-2.png
+	lyxscale 50
+	width 85text%
+	rotateOrigin center
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset Formula $[0,1]$
+\end_inset
+
+ から random に 
+\begin_inset Formula $x$
+\end_inset
+
+ を 
+\begin_inset Formula $10$
+\end_inset
+
+ 箇所抽出し、
+\begin_inset Formula $\sin2\pi x$
+\end_inset
+
+ を計算した後に small Gaussian noise を加えた結果。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+例として、実データ 
+\begin_inset Formula $x$
+\end_inset
+
+ が与えられたときに real-valued target 
+\begin_inset Formula $t$
+\end_inset
+
+ を予想するような simple regression problem を考える。ここでは簡単のため 
+\begin_inset Formula $\sin2\pi x$
+\end_inset
+
+ を考え、training set を 
+\begin_inset Formula $\bm{x}\equiv(x_{1},\cdots,x_{N})^{T}$
+\end_inset
+
+ 、対応する観測値を 
+\begin_inset Formula $\bm{t}\equiv(t_{1},\cdots,t_{N})^{T}$
+\end_inset
+
+ と表すことにする。また、ここでは観測値 
+\begin_inset Formula $\bm{t}$
+\end_inset
+
+ は 
+\begin_inset Formula $\sin2\pi x$
+\end_inset
+
+ に small Gaussian noise を加えたものとする
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+現実の観測値は、放射性崩壊のように process そのものが stochastic である場合もあるが、大体の場合はその他の何らかの要因が noise
+ となって本質的な法則の測定を難しくしている。
+\end_layout
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+我々のゴールは新たな input 
+\begin_inset Formula $\hat{x}$
+\end_inset
+
+ の target 
+\begin_inset Formula $\hat{t}$
+\end_inset
+
+ を予測することである。Uncertainty の定量的な評価などは後にして、まずは直感的な方法を試すことにする。簡単に思いつくのは多項式
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y(x,\bm{w})=\sum_{j=0}^{M}w_{j}x^{j},
+\end{equation}
+
+\end_inset
+
+を考え
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+このモデルは 
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+に関して linear であることから linear model と総称される。
+\end_layout
+
+\end_inset
+
+、二乗誤差
+\begin_inset Formula 
+\begin{equation}
+E(\bm{w})=\frac{1}{2}\sum_{n=1}^{N}\left[y(x_{n},\bm{w})-t_{n}\right]^{2},
+\end{equation}
+
+\end_inset
+
+を最小化する方法である。
+\begin_inset Formula $E(\bm{w})$
+\end_inset
+
+ は 
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+ の quadratic function のため、微分すると 
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+ の一次関数となりunique な closed form
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Closed form に明確な定義はないらしいため「よく知られた形で得られる数式」程度の理解で良さそう。(
+\begin_inset CommandInset href
+LatexCommand href
+name "Wikipedia - Closed-form expression"
+target "https://en.wikipedia.org/wiki/Closed-form_expression"
+literal "false"
+
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+
+ な解 
+\begin_inset Formula $\bm{w}=\bm{w}^{*}$
+\end_inset
+
+ が求まる。
+\end_layout
+
+\begin_layout Standard
+一方、この条件からは決めらないモデルの自由度 
+\begin_inset Formula $M$
+\end_inset
+
+ を定める問題を model comparison または model selection と呼ぶ。Figure 1.4 より、
+\begin_inset Formula $M$
+\end_inset
+
+ が小さすぎるとほとんど予測ができていない一方、大きすぎても
+\begin_inset Formula $E(\bm{w}^{*})=0$
+\end_inset
+
+ ではあるものの 
+\begin_inset Formula $\sin2\pi x$
+\end_inset
+
+ とは程遠い形となってしまうことがわかる (over-fitting)。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename img/fig-1-4.png
+	lyxscale 50
+	width 75text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $M$
+\end_inset
+
+ と新たなデータに対する予測の精度の関係を確かめるため、training set と同様の手法で新たに 
+\begin_inset Formula $100$
+\end_inset
+
+ 個の test set を生成し、
+\begin_inset Formula $E(\bm{w}^{*})$
+\end_inset
+
+ の root-mean-square 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E_{{\rm RMS}}=\sqrt{2E(\bm{w}^{*})/N},
+\end{equation}
+
+\end_inset
+
+を計算してみる (Figure 1.5)。すると 
+\begin_inset Formula $3\leq M\leq8$
+\end_inset
+
+ ではどちらも誤差が減少していく一方、
+\begin_inset Formula $M=9$
+\end_inset
+
+ になると自由度が残っていないことから 
+\begin_inset Formula $E(\bm{w}^{*})=0$
+\end_inset
+
+ になるが、test set の誤差は大きくなっていることがわかる。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename img/fig-1-5.png
+	lyxscale 50
+	width 85line%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $M$
+\end_inset
+
+ を大きくしていくと誤差が大きくなっていくのは、高次元のモデルは低次元のモデルも含んでいること、そもそも
+\begin_inset Formula $\sin2\pi x$
+\end_inset
+
+ は全ての次元の項を含んでいることなどを考えると paradoxical にも思える。しかし、
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+ の値を具体的に見てみると 
+\begin_inset Formula $M$
+\end_inset
+
+ が大きくなるにつれ 
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+ は異常に大きくなっていることがわかる (Table 1.1)。つまり、データの微小な違い (noise) に過剰に fitting してしまっているからであると
+言える。
+\end_layout
+
+\begin_layout Standard
+一方、training set のデータ数を増やした場合、モデルを複雑にしても over-fitting の問題はより起きづらくなる。これはデータが増えて
+ fit できる自由度が増えることによるもので、heurisitic にはモデルの parameter の数はデータ数の数分の一程度に留めておくと良さそうである
+。しかし、モデルの複雑さは問題設定の複雑さに対応すべきでデータ数に起因すべきではないような気もする。この over-fitting の問題は (最小二乗法を含む
+) maximum likelihood では一般的な問題であり、このような問題は Bayesian approach では生じないことを後に確認する。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename img/tab-1-1.png
+	lyxscale 50
+	width 85text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+モデルの複雑性と柔軟性を両立する有名な方法は、error function に係数の増大を阻害する penalty 項を導入する　regularization
+ と呼ばれる手法である(neural network の文脈では weight decay とも呼ばれる) 。例えば、
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\tilde{E}(\bm{w})=\frac{1}{2}\sum_{n=1}^{N}\left[y(x_{n},\bm{w})-t_{n}\right]^{2}+\frac{\lambda}{2}||\bm{w}||^{2},
+\end{equation}
+
+\end_inset
+
+のように重みの二乗を加えておくことで error function の最小化に対する penalty を課すことができ、ridge regression
+ と呼ばれる。ただしこの際、目的変数の「原点」に依存する
+\begin_inset Formula $\bm{w}_{0}$
+\end_inset
+
+ は penalty に含めないか、もしくはそれに対応した正則化係数をかけることが多い。このように推定にあまり関係ないパラメータの影響を小さくする手法を
+ shrinkage と呼ぶ。
+\end_layout
+
+\begin_layout Standard
+実際に正則化係数 
+\begin_inset Formula $\lambda$
+\end_inset
+
+ を適当に設定して再度 
+\begin_inset Formula $\bm{w}^{*}$
+\end_inset
+
+を求めると、係数の増大は抑えられ、同時に RMS 誤差も小さくなることがわかる (Table 1.2, Figure 1.8)。このように、単純に誤差を最小化して問
+題を解く場合、モデルの複雑さは別の枠組みから定めなければならない。そのために、訓練データを事前に validation set として分けておく手法があるが、貴
+重な訓練データを無駄にしないより洗練されたアプローチを 1.3 でみる。
+\end_layout
+
+\begin_layout Standard
+ここまでで問題解決の発見的アプローチは終わりにして、以降は確率論的な枠組みを用いてより原理的なアプローチを考えていく。
+\end_layout
+
+\begin_layout Subsection
+Probability Theory
+\end_layout
+
+\begin_layout Standard
+確率変数 
+\begin_inset Formula $X,Y$
+\end_inset
+
+ に対して
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+以降の暗黙の notation として、確率変数は大文字で、その実現時は小文字で表されることに注意。
+\end_layout
+
+\end_inset
+
+、
+\begin_inset Formula $X$
+\end_inset
+
+ かつ 
+\begin_inset Formula $Y$
+\end_inset
+
+ の確率 (同時確率: joint probability) を 
+\begin_inset Formula $p(X,Y)$
+\end_inset
+
+、
+\begin_inset Formula $X$
+\end_inset
+
+ の下での 
+\begin_inset Formula $Y$
+\end_inset
+
+ の確率 (条件付き確率: conditional probability) を 
+\begin_inset Formula $p(Y|X)$
+\end_inset
+
+とすると以下の原則が成り立つ。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{itembox}[l]{The Rules of Probability}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{align}
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\backslash
+rm sum
+\backslash
+ rule} 
+\backslash
+quad & p(X) = 
+\backslash
+sum_Y p(X, Y), 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\backslash
+rm product
+\backslash
+ rule} 
+\backslash
+quad & p(X, Y) = p(X|Y)p(X).
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{align}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{itembox}
+\end_layout
+
+\end_inset
+
+ここで、
+\begin_inset Formula $p(X)$
+\end_inset
+
+ は 
+\begin_inset Formula $Y$
+\end_inset
+
+ で和を取っていることから周辺確率 (marginal probability) と呼ばれることもある。
+\end_layout
+
+\begin_layout Standard
+これと 
+\begin_inset Formula $p(X,Y)=p(Y,X)$
+\end_inset
+
+ から直ちに Bayes' theorem
+\begin_inset Formula 
+\begin{equation}
+p(Y|X)=\frac{p(X|Y)p(Y)}{p(X)},
+\end{equation}
+
+\end_inset
+
+が成り立つことがわかる
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+分母は 
+\begin_inset Formula $\sum_{Y}p(X|Y)p(Y)$
+\end_inset
+
+ とも書けるので、
+\begin_inset Formula $Y$
+\end_inset
+
+ で和をとった場合に
+\begin_inset Formula $p(Y|X)$
+\end_inset
+
+ が 
+\begin_inset Formula $1$
+\end_inset
+
+ になるための規格化因子になっていることがわかる。
+\end_layout
+
+\end_inset
+
+。Bayes の文脈では、単なる事象 
+\begin_inset Formula $X$
+\end_inset
+
+ の確率 
+\begin_inset Formula $p(X)$
+\end_inset
+
+ などを事前確率 (prior probability)、ある事象 
+\begin_inset Formula $Y$
+\end_inset
+
+ が起きた下での 
+\begin_inset Formula $X$
+\end_inset
+
+ の確率 
+\begin_inset Formula $p(X|Y)$
+\end_inset
+
+ などを事後確率 (posterior probability) と呼ぶ。
+\end_layout
+
+\begin_layout Standard
+また、
+\begin_inset Formula 
+\begin{equation}
+p(X,Y)=p(X)p(Y),
+\end{equation}
+
+\end_inset
+
+が成り立つとき、
+\begin_inset Formula $X,Y$
+\end_inset
+
+ は互いに独立 (independent) であるという。
+\end_layout
+
+\begin_layout Subsubsection
+Probability densities
+\end_layout
+
+\begin_layout Standard
+連続値での確率も考えてみる。実変数 
+\begin_inset Formula $x$
+\end_inset
+
+ が 
+\begin_inset Formula $(x,x+\delta x)$
+\end_inset
+
+ の間の値を取る確率が 
+\begin_inset Formula $\delta x\rightarrow0$
+\end_inset
+
+ で 
+\begin_inset Formula $p(x)\delta x$
+\end_inset
+
+ の形で表されるとき、
+\begin_inset Formula $p(x)$
+\end_inset
+
+ を 
+\begin_inset Formula $x$
+\end_inset
+
+ についての確率密度 (probability density) と呼び、以下の性質を満たす。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align}
+p(x) & \geq0,\\
+\int_{-\infty}^{\infty}p(x)dx & =1.
+\end{align}
+
+\end_inset
+
+従って、定義上、変数変換の際は、微小要素まで含めて一致するよう気をつけなければならない。
+\begin_inset Formula 
+\begin{align}
+p_{x}(x)\delta x & \simeq p_{y}(y)\delta y\\
+\rightarrow\quad p_{y}(y) & =p_{x}(x)\left|\frac{dx}{dy}\right|,\\
+ & =p_{x}(g(y))|g'(y)|.\quad(x=g(y))
+\end{align}
+
+\end_inset
+
+また、以下のようなある値までの確率を累積分布関数 (cumulative distribution function) と呼ぶ。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+P(z)=\int_{-\infty}^{z}p(x)dx
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+複数の変数 
+\begin_inset Formula $\bm{x}=\left(x_{1},\cdots,x_{D}\right)$
+\end_inset
+
+ についても同様に定義される。 (本文参照)
+\end_layout
+
+\begin_layout Subsubsection
+Expectations and covariance
+\end_layout
+
+\begin_layout Standard
+確率分布 
+\begin_inset Formula $p(x)$
+\end_inset
+
+ の下でのある関数 
+\begin_inset Formula $f(x)$
+\end_inset
+
+ の平均は期待値と呼ばれ、次のように計算される。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{itembox}[l]{Expectation}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{align}
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\backslash
+rm discrete
+\backslash
+ variables} 
+\backslash
+quad & 
+\backslash
+mathbb{E}[f] = 
+\backslash
+sum_x p(x)f(x), 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\backslash
+rm continuous
+\backslash
+ variables} 
+\backslash
+quad & 
+\backslash
+mathbb{E}[f] = 
+\backslash
+int p(x)f(x) dx.
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{align}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{itembox}
+\end_layout
+
+\end_inset
+
+これらの期待値はデータから
+\begin_inset Formula 
+\begin{equation}
+\mathbb{E}[f]\simeq\frac{1}{N}\sum_{n=1}^{N}f(x_{n}),
+\end{equation}
+
+\end_inset
+
+と計算可能で 
+\begin_inset Formula $N\rightarrow\infty$
+\end_inset
+
+ の極限で一致する。
+\end_layout
+
+\begin_layout Standard
+また、以降の notation として、
+\begin_inset Formula $x$
+\end_inset
+
+ に関する期待値のみとる場合
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbb{E}_{x}\left[f(x,y)\right],
+\end{equation}
+
+\end_inset
+
+と表すことにし、条件付き確率の期待値を
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathbb{E}\left[f|y\right]=\sum_{x}p(x|y)f(x),
+\end{equation}
+
+\end_inset
+
+と表すことにする。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{itembox}[l]{Variance and Covariance}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{align}
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\backslash
+rm variance} 
+\backslash
+quad & {
+\backslash
+rm var}[f] = 
+\backslash
+mathbb{E}[(f(x) - 
+\backslash
+mathbb{E}[f(x)])^2]
+\end_layout
+
+\begin_layout Plain Layout
+
+                                    = 
+\backslash
+mathbb{E}[f(x)^2] - 
+\backslash
+mathbb{E}[f(x)]^2, 
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\backslash
+rm continuous
+\backslash
+ variables} 
+\backslash
+quad & {
+\backslash
+rm cov}[x, y] = 
+\backslash
+mathbb{E}_{x,y}[{x-
+\backslash
+mathbb{E}[x]}{y-
+\backslash
+mathbb{E}[y]}]
+\end_layout
+
+\begin_layout Plain Layout
+
+                                                    = 
+\backslash
+mathbb{E}_{x,y}[xy] - 
+\backslash
+mathbb{E}[x][y].
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{align}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{itembox}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Covariance は vector に対しても同様に
+\begin_inset Formula 
+\begin{align}
+{\rm cov}[\bm{x},\bm{y}] & =\mathbb{E}_{\bm{x},\bm{y}}\left[\left\{ \bm{x}-\mathbb{E}[\bm{x}]\right\} \left\{ \bm{y}^{T}-\mathbb{E}[\bm{y}^{T}]\right\} \right],\\
+ & =\mathbb{E}_{\bm{x},\bm{y}}\left[\bm{xy}^{T}\right]-\mathbb{E}[\bm{x}]\mathbb{E}[\bm{y}^{T}].
+\end{align}
+
+\end_inset
+
+と求まる。
+\end_layout
+
+\begin_layout Subsubsection
+Bayesian probabilities
+\end_layout
+
+\begin_layout Standard
+確率をランダムな繰り返し試行の頻度として捉える古典的 (classical) or 頻度主義的 (frequentist) 確率解釈と呼ぶ一方、確率を不確実性の
+定量化と捉えることを Bayes 的な見方と呼ぶ
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+なお、不確実性が満たすべき性質が確率のそれと同じであることは証明さえれているらしい。
+\end_layout
+
+\end_inset
+
+。例えば、南極の氷が今世紀末に消えるかといった問題を考えるとき、極地の氷が溶ける速度などといった量を不確実性まで含めて定量的に評価し、新たな証拠
+ (例えば極地の詳細な地形など) に応じてこれらを修正していくプロセスは、まさしく Bayes 的な解釈によって実現される
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+「確率の記述」という点では頻度主義と Bayes 主義は同義であり、逆にそれが様々な議論を生んでいる。特に Bayes 主義では事前分布を仮定するため、結果があ
+る意味主観に依存してしまう。そのため、事前分布への依存を小さくしたい場合は noninformative prior (無情報事前分布) を使うこともある。
+\end_layout
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+Pattern recognition においては、Bayes 的な見方は、データではなくモデルパラメータ 
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+ (さらにはモデルそのものの選択) 自体の不確実性を定量的に取り扱うことである。
+\end_layout
+
+\begin_layout Standard
+例えば、頻度主義でしばしば使用される maximum likelihood は parameter 
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+ が与えられたときにデータ 
+\begin_inset Formula $\mathcal{D}$
+\end_inset
+
+ が得られる確率 
+\begin_inset Formula $p(D|\bm{w})$
+\end_inset
+
+ (likelihood function) を最大化することで 
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+ を求める。ここには根底に
+\emph on
+ 
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+ を固定した何らかの推定すべき量と捉え、その不確実性をデータ 
+\begin_inset Formula $\mathcal{D}$
+\end_inset
+
+ の分布によって捉えよう
+\emph default
+という姿勢が存在している。一方、Bayes 主義的な見方では
+\emph on
+データはただ一つであり、パラメータに関する不確実性は 
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+ の分布という形で記述される
+\emph default
+。従って、likelihood function はあくまで事後分布 
+\begin_inset Formula $p(\bm{w}|\mathcal{D})$
+\end_inset
+
+ を計算するための手段である。
+\end_layout
+
+\begin_layout Standard
+ベイズ的な手法は周辺分布の計算を必要とし計算コストが高いためこれまであまり使われてこなかった。しかし、マルコフ連鎖モンテカルロ法といったサンプリング法の開発や計
+算機の発展によって実用的に使用することが可能になった。さらに、変分ベイズ法、EP 法 (期待値伝搬法) といった決定論的近似法が開発されたことにより、サンプリン
+グ手法を用いることが難しい場合にも応用できる幅が広がっている。
+\end_layout
+
+\begin_layout Subsubsection
+The Gaussian distribution
+\end_layout
+
+\begin_layout Standard
+Normal or Gaussian distribution とは、
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\mathcal{N}(x|\mu,\sigma^{2})=\frac{1}{(2\pi\sigma^{2})^{1/2}}\exp\left\{ -\frac{(x-\mu)^{2}}{2\sigma^{2}}\right\} .
+\end{equation}
+
+\end_inset
+
+ここでそれぞれ、
+\begin_inset Formula 
+\begin{align*}
+\mu & :\ {\rm mean},\\
+\sigma^{2} & :\ {\rm variance},\\
+\sigma & :\ {\rm standard\ deviation},\\
+1/\sigma^{2} & :\ {\rm precision.}
+\end{align*}
+
+\end_inset
+
+と呼ばれる。
+\end_layout
+
+\begin_layout Standard
+また、
+\begin_inset Formula $D$
+\end_inset
+
+-dimensional vector 
+\begin_inset Formula $\bm{x}$
+\end_inset
+
+ についても Gaussian distribution は定義でき、
+\begin_inset Formula 
+\begin{equation}
+\mathcal{N}(x|\bm{\mu},\bm{\Sigma})=\frac{1}{(2\pi)^{D/2}}\frac{1}{|\bm{\Sigma}|^{1/2}}\exp\left\{ -\frac{1}{2}(\bm{x}-\bm{\mu})^{T}\bm{\Sigma}^{-1}(\bm{x}-\bm{\mu})\right\} ,
+\end{equation}
+
+\end_inset
+
+となる。ここで、
+\begin_inset Formula $\bm{\Sigma}$
+\end_inset
+
+ は 
+\begin_inset Formula $D\times D$
+\end_inset
+
+ の covariance matrix であり、
+\begin_inset Formula $|\bm{\Sigma}|$
+\end_inset
+
+ は determinant を表す。
+\end_layout
+
+\begin_layout Standard
+以下、i.i.d.
+ (independent and identically distributed) に得られたデータ 
+\begin_inset Formula $\bm{x}=(x_{1},\cdots,x_{N})^{T}$
+\end_inset
+
+ から最尤推定で得られる 
+\begin_inset Formula $\mu$
+\end_inset
+
+ と 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+ の話。最尤推定量が不偏分散ではないことによる bias が over-fitting の問題を生んでいるらしい。(教科書で説明)
+\end_layout
+
+\begin_layout Subsubsection
+Curve fitting re-visited
+\end_layout
+
+\begin_layout Standard
+1.1 でみた curve fitting を確率論的見知から再度眺めてみる。
+\end_layout
+
+\begin_layout Standard
+Target 周り不確実性を定量化するため、ここでは Gaussian distribution を考える。つまり、
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+p(t|x,\bm{w},\beta)=\mathcal{N}\left(t|y(x,\bm{w}),\beta^{-1}\right).\label{eq:prior-distribution}
+\end{equation}
+
+\end_inset
+
+これを用いて再度 maximum likelihood を行うと、
+\begin_inset Formula 
+\begin{equation}
+\ln p(\bm{t}|\bm{x},\bm{w},\beta)=-\frac{\beta}{2}\sum_{n=1}^{N}\left[y(x_{n},\bm{w})-t_{n}\right]^{2}+\frac{N}{2}\ln\beta-\frac{N}{2}\ln(2\pi),\label{eq:log-likelihood}
+\end{equation}
+
+\end_inset
+
+となる。従って、
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+ に関する log lilkelihood の最大化は先に定義した error function の最小化と同じであることがわかる。
+\end_layout
+
+\begin_layout Standard
+同様に 
+\begin_inset Formula $\mu,\beta$
+\end_inset
+
+ も計算すると、1.2.4 で求めたものと同様の結果が得られ、以上の結果を用いると、最尤推定量を用いた確率分布
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+p\left(t|x,\bm{w}_{{\rm ML}},\beta_{{\rm ML}}\right)=\mathcal{N}\left(t|y(x,\bm{w}_{{\rm ML}}),\beta_{{\rm ML}}^{-1}\right),
+\end{equation}
+
+\end_inset
+
+から新たなデータに対する予測できる。
+\end_layout
+
+\begin_layout Standard
+以上の話をより Bayesian 的なアプローチで考えてみる。簡単のため、
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+ の事前分布として Gaussian distribution 
+\begin_inset Formula 
+\begin{equation}
+p(\bm{w}|\alpha)=\mathcal{N}(\bm{w}|\bm{0},\alpha^{-1}\bm{I})=\left(\frac{\alpha}{2\pi}\right)^{(M+1)/2}\exp\left[-\frac{\alpha}{2}\bm{w}^{T}\bm{w}\right],\label{eq:weight-distribution}
+\end{equation}
+
+\end_inset
+
+を仮定する。Bayes' theorem より事後分布
+\begin_inset Formula 
+\begin{equation}
+p(\bm{w}|\bm{x},\bm{t},\alpha,\beta)\propto p(\bm{t}|\bm{x},\bm{w},\beta)p(\bm{w}|\alpha),\label{eq:posterior}
+\end{equation}
+
+\end_inset
+
+と表されることを用いてデータから最も起こりえそうな 
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+ を選択する方法があり、これを maximum posterior (MAP) と呼ぶ。式 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:posterior"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) の log を取って (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:log-likelihood"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) と (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:weight-distribution"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) の 
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+ に関係する項のみ取ってくると、
+\begin_inset Formula 
+\begin{equation}
+\frac{\beta}{2}\sum_{n=1}^{N}\left[y(x_{n},\bm{w})-t_{n}\right]^{2}+\frac{\alpha}{2}\bm{w}^{T}\bm{w},
+\end{equation}
+
+\end_inset
+
+となるため、posterior を最大化する行為は regularization を含めた二乗誤差を最小化する行為と等しいことがわかる。
+\end_layout
+
+\begin_layout Subsubsection
+Bayesian curve fitting
+\end_layout
+
+\begin_layout Standard
+以上の話は prior という概念を導入したものの、
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+ を点推定している点で十分な Bayesian approach とは言えない。Fully Baysian approach では 
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+ に関する積分を通して事後分布を計算していく。
+\end_layout
+
+\begin_layout Standard
+例えば、新たなデータ 
+\begin_inset Formula $x$
+\end_inset
+
+ に対する予測は、 
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+ についての marginalize
+\begin_inset Formula 
+\begin{equation}
+p(t|x,\bm{x},\bm{t})=\int p(t|x,\bm{w})p(\bm{w}|\bm{x},\bm{t})d\bm{w},
+\end{equation}
+
+\end_inset
+
+をすることで求められる。ここで、
+\begin_inset Formula $p(t|x,\bm{w})$
+\end_inset
+
+ は式 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:prior-distribution"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) から、
+\begin_inset Formula $p(\bm{w}|\bm{x},\bm{t})$
+\end_inset
+
+ は式 (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:posterior"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+) から求められる。
+\end_layout
+
+\begin_layout Standard
+Section 3.3 でみるように今回の場合は analytical に分布を求められて、結果は本文の (1.69) - (1.72) のようになる。特に分散につい
+て見てみると、第二項が予め与えた target のゆらぎに新たに加わった Bayes approach による効果だとわかる。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{itembox}[l]{katarash's column}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+「MAP 推定が Bayesian approach ではない」というのはこの本において重要な主張である。これは、事後分布を用いて 
+\begin_inset Formula $\bm{w}$
+\end_inset
+
+ を点推定するだけでは十分でなく、事後分布を用いて新たなデータ 
+\begin_inset Formula $x$
+\end_inset
+
+ に対する (予測) 分布まで求めて初めて Bayesian approach と呼ぶべきであるという本書のスタンスを如実に表している。
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{itembox}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Model Selection
+\end_layout
+
+\begin_layout Standard
+既に見たように maximum likelihood では over-fitting の問題があった。Training set が十分に大きい場合には
+ validation set, test set を確保して学習すれば良いが、多くの場合訓練データは貴重なものである。その際に用いられるのが
+ cross-validation という手法であり、
+\begin_inset Formula $(S-1)/S$
+\end_inset
+
+ のデータを学習に使い、性能の評価に全てのデータを用いる方法である。特に 
+\begin_inset Formula $S=N$
+\end_inset
+
+ のとき、 leave-one-out と呼ばれる。
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename img/fig-1-18.png
+	width 85text%
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+しかし、cross validation はデータ数が大きくなるほど training に必要な回数が多くなる。さらに調整すべき parameter
+ が大量にある場合は指数関数的に学習量が増えていくことを考えると、training data のみで完結して一度に複数の parameter を最適化できるよう
+な model selection の基準があることが望ましい。
+\end_layout
+
+\begin_layout Standard
+このような観点から歴史的に様々な information criteria が提案されている
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+ここで述べられているのは maximum-likelihood が含む bias (モデルの parameter 推定に用いたデータを再利用して分布を計算してい
+ること) をうまく取り除こうとすると様々な項が出てくるよというものである。
+\end_layout
+
+\end_inset
+
+。有名なものは Akaike information criterion (AIC) 
+\begin_inset Formula 
+\begin{equation}
+-{\rm AIC}=\ln p(\mathcal{D}|\bm{w}_{{\rm ML}})-M,
+\end{equation}
+
+\end_inset
+
+である。ここで 
+\begin_inset Formula $p(\mathcal{D}|\bm{w}_{{\rm ML}})$
+\end_inset
+
+は best-fit likelihood であり 
+\begin_inset Formula $M$
+\end_inset
+
+ は model の parameter 数を表す。このようにモデルのパラメータ数に応じた penalty を課すことによって、モデルのパラメータ数も同時に最適
+化することができる。
+\end_layout
+
+\begin_layout Standard
+この発展形として Bayesian information criterion (BIC) というものもあり、これは 4.4.1 で議論する。
+\end_layout
+
+\begin_layout Subsection
+The Curse of Dimensionality
+\end_layout
+
+\begin_layout Standard
+これまでの curve fitting の例では iput は 1 次元だったが、一般に input はより高次元である。この high dimensional
+ity が pattern recognition では問題を引き起こしうることをみる。
+\end_layout
+
+\begin_layout Standard
+ある input の空間に存在するデータを分類する単純なやり方は、領域を適当な mesh に区切ってその中に最も存在するデータを予測値とすることである。一方でこ
+のやり方は input の次元が大きくなるにつれ分類に必要なデータ数が 
+\begin_inset Formula $D$
+\end_inset
+
+ の指数乗で大きくなることで容易に破綻する
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+直感と反する高次元の面白い性質がある。半径 
+\begin_inset Formula $r$
+\end_inset
+
+ の 
+\begin_inset Formula $K$
+\end_inset
+
+ 次元球の体積を 
+\begin_inset Formula $V_{D}(r)=K_{D}r^{D}$
+\end_inset
+
+ と定義すると、半径 
+\begin_inset Formula $1$
+\end_inset
+
+ の円の表皮 
+\begin_inset Formula $1-\epsilon$
+\end_inset
+
+ に存在する相対的な体積は、
+\begin_inset Formula 
+\begin{equation}
+\frac{V_{D}(1)-V_{D}(1-\epsilon)}{V_{D}(1)}=1-(1-\epsilon)^{D},
+\end{equation}
+
+\end_inset
+
+となることから、次元が大きければ大きいほど体積のほとんどは球の表皮に存在することがわかる。
+\end_layout
+
+\end_inset
+
+。
+\end_layout
+
+\begin_layout Standard
+このように高次元空間で生じる問題は次元の呪い (curse of dimensionality) と呼ばれる。しかし、実際には
+\end_layout
+
+\begin_layout Itemize
+実際のデータは、effective にはより低い次元で表される空間に confine されていることが多い
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+本文では、ベルトコンベア上の物体の方向を画像から認識する例があげられている。この場合、input は pixel 数で与えられる高次元空間だが、本質的には
+ 
+\begin_inset Formula $(x,y,z)$
+\end_inset
+
+ といった方向を決める 
+\begin_inset Formula $3$
+\end_inset
+
+ つの自由度のみが重要である。つまり、高次元空間に埋め込まれた低次元の多様体 (manifold) の性質さえわかれば良いということである。
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+実際のデータは (少なくとも local には) 滑らかに繋がっていることが多く、input のわずかな変更は interpolation で予測することができ
+る
+\end_layout
+
+\begin_layout Standard
+といった理由から、必ずしも high dimension では効果的な pattern recognition を行えないというわけではない。
+\end_layout
+
+\end_body
+\end_document
